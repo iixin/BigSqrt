@@ -1,4 +1,5 @@
 use num::{bigint::{BigInt, ToBigInt}, Zero, One, ToPrimitive};
+use indicatif::ProgressIterator;
 
 trait Digit {
     fn is_string_digit(&self) -> bool;
@@ -19,9 +20,9 @@ impl Digit for String {
     }
 
     fn str_to_bigint(&self) -> Option<BigInt> {
-        if !self.is_string_digit() {
-            return None;
-        }
+        // if !self.is_string_digit() {
+        //     return None;
+        // }
 
         let mut result = BigInt::zero();
         let ten: BigInt = BigInt::one() * 10;
@@ -45,19 +46,17 @@ impl BigSqrt for BigInt {
         if self < &BigInt::zero() {
             return None;
         }
-        let mut result = self.sqrt().to_string();
+        let mut result = self.sqrt();
+
         let index_of_point =result.to_string().len();
         let ten: BigInt = BigInt::one() * 10;
-        for j in 1..len+1 {
+        for j in (1..len+1).progress() {
             let mut tirl = 0;
 
             for i in 0..10 {
-                // let m = result.str_to_bigint().unwrap() + i;
-                let mm1 = result.str_to_bigint().unwrap()*10.to_bigint().unwrap() + i;
+                let mm1 = &result*&ten + i; //temp
                 let mm=&mm1*&mm1;
-                let mx=&mm/ten.pow(2*j);
-                // println!("{} mx:{}",&mm1,&mx);
-
+                let mx=&mm/&ten.pow(2*j);
                 if &mx >= self {
                     tirl = i - 1;
 
@@ -65,15 +64,16 @@ impl BigSqrt for BigInt {
                 }
                 tirl = 9;
             }
-            result.push_str(&tirl.to_string());
+            result = &result*&ten +tirl;
         }
-        result.insert(index_of_point, '.');
-        Some(result)
+        let mut ans = result.to_string();
+        ans.insert(index_of_point, '.');
+        Some(ans)
     }
     
 }
 
 fn main() {
     let x="2".to_string().str_to_bigint().unwrap(); // 2
-    println!("{}", x.big_sqrt(100).unwrap());               // sqrt(2) 小数点后1000位
+    println!("{}", x.big_sqrt(10000).unwrap());               // sqrt(2) 小数点后1000位
 }

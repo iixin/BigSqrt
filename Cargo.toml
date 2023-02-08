@@ -1,5 +1,5 @@
 [package]
-name = "BigSqrt"
+name = "big_sqrt"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 num = "0.4.0"
+indicatif = {version = "*", features = ["rayon"]}
